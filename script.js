@@ -1,30 +1,38 @@
 var svg = document.getElementById('mysvg');
-var clear = document.getElementById('clear');
+var clearButton = document.getElementById('clear');
 
 var newCircle = function(x, y, r, fill){
+  console.log("newCircle called");
   var circleObj = {
     element: document.createElementNS('http://www.w3.org/2000/svg', "circle"),
     x: x,
   	y: y,
   	r: r,
   	fill: fill,
-	  display: function(){
+    remove: function(e){
+      console.log("remove called");
+      svg.removeChild(this);
+    },
+    changeColor: function(e){
+      console.log("changeColor called");
+      e.stopPropagation();
+      if ( e.target.getAttribute("fill") == "black" ){
+        e.target.setAttribute("fill", "red");
+      }
+      else {
+        this.remove();
+        newObj = newCircle( Math.random()*500, Math.random()*500, r, fill );
+        newObj.display();
+      }
+    },
+    display: function(){
+      console.log("display called");
       this.element.setAttribute("cx", x);
 	    this.element.setAttribute("cy", y);
 	    this.element.setAttribute("r", r);
 	    this.element.setAttribute("fill", fill);
 	    svg.appendChild(this.element);
-      this.element.addEventListener("click", remove);
-    },
-	  remove: function(e){
-      if( e.target.getAttribute("fill") == "black" ) {
-        e.stopPropagation();
-		    e.target.setAttribute("fill", "red");
-      } else {
-        e.stopPropagation();
-		    svg.removeChild(e.target);
-        // newCircle( Math.random()*500, Math.random()*500, 10, "black");
-      }
+      this.element.addEventListener("click", this.changeColor);
     }
   }
   return circleObj;
@@ -32,14 +40,16 @@ var newCircle = function(x, y, r, fill){
 
 
 var makeCircle = function(e) {
+  console.log("makeCircle called");
   newCircle( e.offsetX, e.offsetY, 10, "black").display();
 }
 
 var clear = function(e){
+  console.log("clear called");
   while( svg.hasChildNodes() ){
-    slate.removeChild( slate.childNodes[0] );
+    svg.removeChild( svg.childNodes[0] );
   }
 }
 
 svg.addEventListener("click", makeCircle)
-clear.addEventListener("click", clear);
+clearButton.addEventListener("click", clear);
